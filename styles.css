@@ -917,6 +917,74 @@ body::before {
   word-break: break-word;
 }
 
+/* ---------- Mic pick (face-off: who speaks first) ---------- */
+.mic-pick {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.mic-pick__label {
+  font-family: var(--display-font);
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+
+.mic-pick__toggle {
+  display: inline-flex;
+  gap: 6px;
+  padding: 4px;
+  background: var(--bg-elev);
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+}
+
+.mic-opt {
+  position: relative;
+  cursor: pointer;
+}
+
+.mic-opt input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  cursor: pointer;
+}
+
+.mic-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 32px;
+  color: var(--fg-dim);
+  border-radius: 999px;
+  transition: color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.mic-arrow svg {
+  width: 18px;
+  height: 18px;
+}
+
+.mic-opt:hover .mic-arrow {
+  color: var(--fg);
+}
+
+.mic-opt input:focus-visible + .mic-arrow {
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+
+.mic-opt input:checked + .mic-arrow {
+  color: var(--bg);
+  background: var(--gold);
+  box-shadow: 0 2px 10px -2px rgba(245, 197, 66, 0.55);
+}
+
 /* ---------- Responsive ---------- */
 @media (max-width: 820px) {
   .review-grid {

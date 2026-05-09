@@ -25,6 +25,7 @@
   const state = {
     screen: "landing",
     activeWrestler: 1,
+    firstOnMic: 1,
     wrestlers: {
       1: emptyWrestler(),
       2: emptyWrestler(),
@@ -146,6 +147,15 @@
       card.querySelector('[data-review-field="description"]').textContent =
         data.description || "—";
     });
+
+    renderMicPick();
+  }
+
+  function renderMicPick() {
+    const checked = document.querySelector(
+      `input[name="first-on-mic"][value="${state.firstOnMic}"]`
+    );
+    if (checked) checked.checked = true;
   }
 
   function goToReview() {
@@ -153,6 +163,12 @@
     renderReview();
     updateStepper();
   }
+
+  document.addEventListener("change", (e) => {
+    if (e.target.name === "first-on-mic") {
+      state.firstOnMic = Number(e.target.value);
+    }
+  });
 
   document.addEventListener("click", (e) => {
     const target = e.target.closest("[data-action]");
@@ -210,6 +226,7 @@
     const payload = {
       wrestler1: state.wrestlers[1],
       wrestler2: state.wrestlers[2],
+      firstOnMic: state.firstOnMic,
     };
     console.log("Confirmed roster:", payload);
     // Hook for next step (e.g. promo generation API call) goes here.
