@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>WWE Promo Gen</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="bg-rays" aria-hidden="true"></div>
+    <div class="bg-smoke" aria-hidden="true"></div>
+    <div class="bg-glow" aria-hidden="true"></div>
+    <div class="bg-glow bg-glow--gold" aria-hidden="true"></div>
+    <div class="bg-spotlight" aria-hidden="true"></div>
+    <div class="bg-noise" aria-hidden="true"></div>
+
+    <!-- Screen 1: Landing -->
+    <section class="screen screen--active" data-screen="landing">
+      <div class="hero">
+        <span class="hero-stripe" aria-hidden="true"></span>
+        <span class="eyebrow eyebrow--gold">AI-Powered Promo Engine</span>
+        <h1 class="title title--display">
+          WWE <span class="title-accent">Promo</span> Gen
+        </h1>
+        <p class="description">enter description here</p>
+        <button class="btn btn--primary btn--chunky" type="button" data-action="start">
+          <span>Ring the Bell</span>
+          <svg
+            class="icon-arrow"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- Screen 2: Wrestler form (reused for both wrestlers) -->
+    <section class="screen" data-screen="wrestler">
+      <div class="container">
+        <nav class="stepper" aria-label="Progress">
+          <div class="step" data-step="1">
+            <span class="step-num">1</span>
+            <span class="step-label">Contender 1</span>
+          </div>
+          <div class="step-line"></div>
+          <div class="step" data-step="2">
+            <span class="step-num">2</span>
+            <span class="step-label">Contender 2</span>
+          </div>
+          <div class="step-line"></div>
+          <div class="step" data-step="review">
+            <span class="step-num">3</span>
+            <span class="step-label">Face-Off</span>
+          </div>
+        </nav>
+
+        <header class="page-head">
+          <span class="eyebrow" data-bind="wrestlerEyebrow">Contender 1 of 2</span>
+          <h2 class="page-title">
+            Meet <span class="title-accent" data-bind="wrestlerHeading">Contender 1</span>
+          </h2>
+          <p class="page-sub">Build the bones of your superstar.</p>
+        </header>
+
+        <form class="form" data-form="wrestler" novalidate>
+          <div class="field">
+            <label class="label" for="name">Name</label>
+            <input
+              class="input"
+              type="text"
+              id="name"
+              name="name"
+              placeholder="e.g. Stone Cold Steve Austin"
+              autocomplete="off"
+              required
+            />
+          </div>
+
+          <div class="field">
+            <span class="label">Alignment</span>
+            <div class="segmented" role="radiogroup" data-group="alignment">
+              <label class="seg-option">
+                <input type="radio" name="alignment" value="babyface" required />
+                <span class="seg-pill seg-pill--baby">
+                  <span class="seg-title">Babyface</span>
+                  <span class="seg-sub">Hero</span>
+                </span>
+              </label>
+              <label class="seg-option">
+                <input type="radio" name="alignment" value="tweener" />
+                <span class="seg-pill seg-pill--tween">
+                  <span class="seg-title">Tweener</span>
+                  <span class="seg-sub">Neutral</span>
+                </span>
+              </label>
+              <label class="seg-option">
+                <input type="radio" name="alignment" value="heel" />
+                <span class="seg-pill seg-pill--heel">
+                  <span class="seg-title">Heel</span>
+                  <span class="seg-sub">Villain</span>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <div class="field">
+            <span class="label">Size</span>
+            <div class="segmented segmented--4" role="radiogroup" data-group="size">
+              <label class="seg-option">
+                <input type="radio" name="size" value="small" required />
+                <span class="seg-pill">
+                  <span class="seg-title">Small</span>
+                  <span class="seg-sub">Compact</span>
+                </span>
+              </label>
+              <label class="seg-option">
+                <input type="radio" name="size" value="average" />
+                <span class="seg-pill">
+                  <span class="seg-title">Average</span>
+                  <span class="seg-sub">Athletic</span>
+                </span>
+              </label>
+              <label class="seg-option">
+                <input type="radio" name="size" value="big" />
+                <span class="seg-pill">
+                  <span class="seg-title">Big</span>
+                  <span class="seg-sub">Powerhouse</span>
+                </span>
+              </label>
+              <label class="seg-option">
+                <input type="radio" name="size" value="giant" />
+                <span class="seg-pill">
+                  <span class="seg-title">Giant</span>
+                  <span class="seg-sub">Monster</span>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label" for="look">Look</label>
+            <textarea
+              class="input textarea textarea--sm"
+              id="look"
+              name="look"
+              rows="3"
+              placeholder="Attire, hair, tattoos, physique, ring entrance vibe..."
+              required
+            ></textarea>
+          </div>
+
+          <div class="field">
+            <label class="label" for="description">Description</label>
+            <textarea
+              class="input textarea"
+              id="description"
+              name="description"
+              rows="5"
+              placeholder="Backstory, gimmick, motivations, signature moves, mic style..."
+              required
+            ></textarea>
+          </div>
+
+          <div class="actions">
+            <button class="btn btn--ghost" type="button" data-action="back">
+              <svg
+                class="icon-arrow icon-arrow--left"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
+              <span>Back</span>
+            </button>
+            <button class="btn btn--primary" type="submit" data-action="continue">
+              <span data-bind="continueLabel">Continue</span>
+              <svg
+                class="icon-arrow"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- Screen 3: Review -->
+    <section class="screen" data-screen="review">
+      <div class="container container--wide">
+        <nav class="stepper" aria-label="Progress">
+          <div class="step" data-step="1">
+            <span class="step-num">1</span>
+            <span class="step-label">Contender 1</span>
+          </div>
+          <div class="step-line"></div>
+          <div class="step" data-step="2">
+            <span class="step-num">2</span>
+            <span class="step-label">Contender 2</span>
+          </div>
+          <div class="step-line"></div>
+          <div class="step" data-step="review">
+            <span class="step-num">3</span>
+            <span class="step-label">Face-Off</span>
+          </div>
+        </nav>
+
+        <header class="page-head">
+          <span class="eyebrow eyebrow--gold">Final Card</span>
+          <h2 class="page-title">
+            Tale of the <span class="title-accent">Tape</span>
+          </h2>
+          <p class="page-sub">Double-check the details before bell time.</p>
+        </header>
+
+        <div class="review-grid">
+          <article class="review-card" data-review="1">
+            <span class="review-card__stamp">01</span>
+            <header class="review-card__head">
+              <span class="review-card__tag">
+                <span class="tag-bar"></span>Contender 1
+              </span>
+              <button class="btn btn--small" type="button" data-action="edit" data-edit="1">
+                Edit
+              </button>
+            </header>
+            <h3 class="review-card__name" data-review-field="name">—</h3>
+            <div class="review-card__meta">
+              <span class="badge" data-review-field="alignment">—</span>
+              <span class="badge badge--muted" data-review-field="size">—</span>
+            </div>
+            <div class="review-card__section">
+              <span class="review-card__label">Look</span>
+              <p class="review-card__text" data-review-field="look">—</p>
+            </div>
+            <div class="review-card__section">
+              <span class="review-card__label">Description</span>
+              <p class="review-card__text" data-review-field="description">—</p>
+            </div>
+          </article>
+
+          <div class="vs-wrap" aria-hidden="true">
+            <span class="vs-spokes"></span>
+            <div class="vs-badge">
+              <span>VS</span>
+            </div>
+          </div>
+
+          <article class="review-card" data-review="2">
+            <span class="review-card__stamp">02</span>
+            <header class="review-card__head">
+              <span class="review-card__tag">
+                <span class="tag-bar"></span>Contender 2
+              </span>
+              <button class="btn btn--small" type="button" data-action="edit" data-edit="2">
+                Edit
+              </button>
+            </header>
+            <h3 class="review-card__name" data-review-field="name">—</h3>
+            <div class="review-card__meta">
+              <span class="badge" data-review-field="alignment">—</span>
+              <span class="badge badge--muted" data-review-field="size">—</span>
+            </div>
+            <div class="review-card__section">
+              <span class="review-card__label">Look</span>
+              <p class="review-card__text" data-review-field="look">—</p>
+            </div>
+            <div class="review-card__section">
+              <span class="review-card__label">Description</span>
+              <p class="review-card__text" data-review-field="description">—</p>
+            </div>
+          </article>
+        </div>
+
+        <div class="actions actions--center">
+          <button class="btn btn--ghost" type="button" data-action="back-to-wrestler-2">
+            <svg
+              class="icon-arrow icon-arrow--left"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            <span>Back</span>
+          </button>
+          <button class="btn btn--primary btn--confirm" type="button" data-action="confirm">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+              width="18"
+              height="18"
+            >
+              <rect x="9" y="2" width="6" height="11" rx="3"></rect>
+              <path d="M5 11a7 7 0 0 0 14 0"></path>
+              <line x1="12" y1="18" x2="12" y2="22"></line>
+              <line x1="8" y1="22" x2="16" y2="22"></line>
+            </svg>
+            <span>Cut the Promo</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <script src="app.js"></script>
+  </body>
+</html>
