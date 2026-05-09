@@ -13,22 +13,25 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="bg-rays" aria-hidden="true"></div>
-    <div class="bg-smoke" aria-hidden="true"></div>
-    <div class="bg-glow" aria-hidden="true"></div>
-    <div class="bg-glow bg-glow--gold" aria-hidden="true"></div>
     <div class="bg-spotlight" aria-hidden="true"></div>
-    <div class="bg-noise" aria-hidden="true"></div>
+    <div class="bg-glow" aria-hidden="true"></div>
 
     <!-- Screen 1: Landing -->
     <section class="screen screen--active" data-screen="landing">
       <div class="hero">
-        <span class="hero-stripe" aria-hidden="true"></span>
-        <span class="eyebrow eyebrow--gold">AI-Powered Promo Engine</span>
+        <span class="eyebrow eyebrow--gold">AI Promo Booking Desk</span>
         <h1 class="title title--display">
           WWE <span class="title-accent">Promo</span> Gen
         </h1>
-        <p class="description">enter description here</p>
+        <p class="description">
+          Build two larger-than-life superstars, lock in their attitude, and set
+          the stage for a main-event promo battle.
+        </p>
+        <div class="hero-card" aria-label="Promo setup summary">
+          <span>2 Superstars</span>
+          <span>Mic Check</span>
+          <span>Main Event Energy</span>
+        </div>
         <button class="btn btn--primary btn--chunky" type="button" data-action="start">
           <span>Ring the Bell</span>
           <svg
@@ -73,7 +76,9 @@
           <h2 class="page-title">
             Meet <span class="title-accent" data-bind="wrestlerHeading">Contender 1</span>
           </h2>
-          <p class="page-sub">Build the bones of your superstar.</p>
+          <p class="page-sub">
+            Give the creative team enough heat, style, and swagger to book the segment.
+          </p>
         </header>
 
         <form class="form" data-form="wrestler" novalidate>
@@ -192,7 +197,7 @@
               </svg>
               <span>Back</span>
             </button>
-            <button class="btn btn--primary" type="submit" data-action="continue">
+            <button class="btn btn--next" type="submit" data-action="continue">
               <span data-bind="continueLabel">Continue</span>
               <svg
                 class="icon-arrow"
@@ -238,7 +243,9 @@
           <h2 class="page-title">
             Tale of the <span class="title-accent">Tape</span>
           </h2>
-          <p class="page-sub">Double-check the details before bell time.</p>
+          <p class="page-sub">
+            Review the matchup card before sending both wrestlers to the microphone.
+          </p>
         </header>
 
         <div class="review-grid">
@@ -268,10 +275,7 @@
           </article>
 
           <div class="vs-wrap" aria-hidden="true">
-            <span class="vs-spokes"></span>
-            <div class="vs-badge">
-              <span>VS</span>
-            </div>
+            <span class="vs-text">VS</span>
           </div>
 
           <article class="review-card" data-review="2">
