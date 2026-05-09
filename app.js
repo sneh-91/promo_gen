@@ -79,6 +79,24 @@
     form.querySelectorAll(".field.has-error").forEach((f) =>
       f.classList.remove("has-error")
     );
+
+    updateAllCounters();
+  }
+
+  function updateCounter(field) {
+    const counter = form.querySelector(`[data-count-for="${field}"]`);
+    if (!counter) return;
+    const el = form.elements[field];
+    if (!el) return;
+    const max = Number(el.getAttribute("maxlength")) || 0;
+    const len = el.value.length;
+    counter.textContent = `${len} / ${max}`;
+    counter.classList.toggle("char-count--max", max > 0 && len >= max);
+    counter.classList.toggle("char-count--near", max > 0 && len >= max * 0.9 && len < max);
+  }
+
+  function updateAllCounters() {
+    ["name", "look", "description"].forEach(updateCounter);
   }
 
   function goToWrestler(idx) {
@@ -215,6 +233,9 @@
   form.addEventListener("input", (e) => {
     const field = e.target.closest(".field");
     if (field) field.classList.remove("has-error");
+    if (e.target.name && ["name", "look", "description"].includes(e.target.name)) {
+      updateCounter(e.target.name);
+    }
   });
 
   form.addEventListener("change", (e) => {

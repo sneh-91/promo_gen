@@ -91,8 +91,10 @@
               name="name"
               placeholder="e.g. Stone Cold Steve Austin"
               autocomplete="off"
+              maxlength="60"
               required
             />
+            <span class="char-count" data-count-for="name" aria-live="polite">0 / 60</span>
           </div>
 
           <div class="field">
@@ -164,8 +166,10 @@
               name="look"
               rows="3"
               placeholder="Attire, hair, tattoos, physique, ring entrance vibe..."
+              maxlength="800"
               required
             ></textarea>
+            <span class="char-count" data-count-for="look" aria-live="polite">0 / 300</span>
           </div>
 
           <div class="field">
@@ -176,8 +180,10 @@
               name="description"
               rows="5"
               placeholder="Backstory, gimmick, motivations, signature moves, mic style..."
+              maxlength="2500"
               required
             ></textarea>
+            <span class="char-count" data-count-for="description" aria-live="polite">0 / 800</span>
           </div>
 
           <div class="actions">
@@ -250,7 +256,6 @@
 
         <div class="review-grid">
           <article class="review-card" data-review="1">
-            <span class="review-card__stamp">01</span>
             <header class="review-card__head">
               <span class="review-card__tag">
                 <span class="tag-bar"></span>Contender 1
@@ -279,7 +284,6 @@
           </div>
 
           <article class="review-card" data-review="2">
-            <span class="review-card__stamp">02</span>
             <header class="review-card__head">
               <span class="review-card__tag">
                 <span class="tag-bar"></span>Contender 2
