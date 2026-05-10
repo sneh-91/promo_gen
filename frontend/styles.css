@@ -1210,7 +1210,7 @@ body::before {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 28px;
+  gap: 56px;
   padding: 32px 24px 40px;
   text-align: center;
   min-height: 100vh;
@@ -1408,7 +1408,7 @@ body::before {
   }
   .promo-stage {
     padding: 24px 18px 32px;
-    gap: 20px;
+    gap: 36px;
   }
   .promo-stage__row,
   .promo-stage__row[data-side="2"] {

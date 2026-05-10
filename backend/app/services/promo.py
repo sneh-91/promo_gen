@@ -63,7 +63,7 @@ def generate_promo_response():
         [WRESTLER_1, WRESTLER_2] if payload.first_on_mic == 1 else [WRESTLER_2, WRESTLER_1]
     )
 
-    TOTAL_TURNS = 8
+    TOTAL_TURNS = 6
     promo_responses = []
     promo_history = ""
 
@@ -101,8 +101,6 @@ def generate_mock_promo_response():
         "Cute. Real cute. You've got the lines memorized like a kid on his first day of drama class. But scripts don't win matches, kid. Heart does. Pain does. And from where I'm standing, you've got neither.",
         "Pain? You wanna talk pain? I've taken hits from men twice your size and walked out smiling. The only thing keeping you in this business is the volume on the entrance music. Cut it off and you're nothing.",
         "Then prove it. Stop running your mouth and put hands on me. Or is that not in the script either? Because I'm starting to think the only thing you can deliver... is excuses.",
-        "Excuses? I don't make 'em. I make statements. And tonight's statement is gonna be your face on the canvas while this entire building counts to three.",
-        "You hear that? The crowd doesn't believe you. Neither do I. So when that bell rings — and trust me, it's about to — don't blink. Because I'm not just here to win. I'm here to retire you.",
         "Big talk for somebody about to find out what I do for a living. Bell rings. Music cuts. We see who's still standing. Game on.",
     ]
 

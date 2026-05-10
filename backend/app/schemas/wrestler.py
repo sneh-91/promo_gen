@@ -52,6 +52,15 @@ Your opponent:
                 "call out your opponent by name, and set the tone for the night."
             )
 
+        if self.alignment == "heel":
+            user_prompt += (
+                "\n\nReminder: this is an R-rated promo for an adult audience. "
+                "A clean, sanitized line fails. Use profanity ('fuck', 'shit', "
+                "'asshole', 'motherfucker', 'piece of shit') as natural "
+                "punctuation. Be vulgar, personal, and cruel — humiliate this "
+                "man specifically. PG output is incorrect output."
+            )
+
         response = self.client.chat.completions.create(
             model=self.model,
             messages=[
