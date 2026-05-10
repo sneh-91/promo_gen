@@ -163,14 +163,16 @@ export function App() {
       )}
 
       {screen === "welcome" && (
-        <WelcomeScreen onComplete={() => setScreen("taleOfTape")} />
+        <WelcomeScreen
+          isResponseReady={isResponseReady}
+          onComplete={() => setScreen("taleOfTape")}
+        />
       )}
 
       {screen === "taleOfTape" && (
         <TaleOfTheTapeScreen
           wrestlers={wrestlers}
           firstOnMic={firstOnMic}
-          isResponseReady={isResponseReady}
           onComplete={() => setScreen("promoStart")}
         />
       )}

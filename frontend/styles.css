@@ -1046,6 +1046,19 @@ body::before {
   margin: 0;
 }
 
+.welcome-hold {
+  margin-top: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-family: var(--display-font);
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
 /* ---------- Wrestler avatar (silhouette / image) ---------- */
 .avatar {
   display: block;
@@ -1107,10 +1120,6 @@ body::before {
 
 .tape-side[data-tape-side="2"] .tape-avatar {
   color: rgba(245, 197, 66, 0.78);
-}
-
-.tape-side--waiting .tape-avatar {
-  animation: silhouettePulse 1.8s ease-in-out infinite;
 }
 
 .tape-name {
@@ -1181,17 +1190,6 @@ body::before {
 
 .tape-status__dots span:nth-child(2) { animation-delay: 0.18s; }
 .tape-status__dots span:nth-child(3) { animation-delay: 0.36s; }
-
-@keyframes silhouettePulse {
-  0%, 100% {
-    opacity: 0.6;
-    filter: drop-shadow(0 0 0 rgba(225, 6, 0, 0));
-  }
-  50% {
-    opacity: 1;
-    filter: drop-shadow(0 0 22px rgba(225, 6, 0, 0.55));
-  }
-}
 
 @keyframes dotPulse {
   0%, 60%, 100% {

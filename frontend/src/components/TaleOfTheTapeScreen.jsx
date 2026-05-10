@@ -1,25 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 import { ALIGNMENT_LABELS, SIZE_LABELS } from "../constants";
 import { WrestlerAvatar } from "./WrestlerAvatar";
 
 const MIN_DISPLAY_MS = 5000;
 
-export function TaleOfTheTapeScreen({ wrestlers, firstOnMic, isResponseReady, onComplete }) {
-  const [minTimeElapsed, setMinTimeElapsed] = useState(false);
-
+export function TaleOfTheTapeScreen({ wrestlers, firstOnMic, onComplete }) {
   useEffect(() => {
-    const timer = setTimeout(() => setMinTimeElapsed(true), MIN_DISPLAY_MS);
+    const timer = setTimeout(onComplete, MIN_DISPLAY_MS);
     return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    if (minTimeElapsed && isResponseReady) {
-      onComplete();
-    }
-  }, [minTimeElapsed, isResponseReady, onComplete]);
-
-  const isWaiting = !isResponseReady;
+  }, [onComplete]);
 
   return (
     <section className="screen screen--active showtime-screen" data-screen="tale-of-tape">
@@ -32,43 +22,22 @@ export function TaleOfTheTapeScreen({ wrestlers, firstOnMic, isResponseReady, on
         </header>
 
         <div className="tape-grid">
-          <TapeSide
-            wrestler={wrestlers[1]}
-            idx={1}
-            isFirst={firstOnMic === 1}
-            isWaiting={isWaiting}
-          />
+          <TapeSide wrestler={wrestlers[1]} idx={1} isFirst={firstOnMic === 1} />
 
           <div className="vs-wrap" aria-hidden="true">
             <span className="vs-text">VS</span>
           </div>
 
-          <TapeSide
-            wrestler={wrestlers[2]}
-            idx={2}
-            isFirst={firstOnMic === 2}
-            isWaiting={isWaiting}
-          />
+          <TapeSide wrestler={wrestlers[2]} idx={2} isFirst={firstOnMic === 2} />
         </div>
-
-        {isWaiting && (
-          <p className="tape-status" role="status" aria-live="polite">
-            <span className="tape-status__dots" aria-hidden="true">
-              <span /><span /><span />
-            </span>
-            <span>Bookers are putting the finishing touches on the segment</span>
-          </p>
-        )}
       </div>
     </section>
   );
 }
 
-function TapeSide({ wrestler, idx, isFirst, isWaiting }) {
-  const sideClass = `tape-side${isWaiting ? " tape-side--waiting" : ""}`;
-
+function TapeSide({ wrestler, idx, isFirst }) {
   return (
-    <article className={sideClass} data-tape-side={idx}>
+    <article className="tape-side" data-tape-side={idx}>
       <div className="tape-avatar-wrap">
         <WrestlerAvatar wrestler={wrestler} className="tape-avatar" />
       </div>
