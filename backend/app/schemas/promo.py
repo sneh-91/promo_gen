@@ -28,3 +28,5 @@ class PromoTurn(BaseModel):
 
 class PromoResponse(BaseModel):
     transcript: list[PromoTurn]
+    portrait_1: str | None = None
+    portrait_2: str | None = None

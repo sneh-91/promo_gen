@@ -101,6 +101,13 @@ export function App() {
     submitPromo([wrestlers[1], wrestlers[2]], firstOnMic)
       .then((data) => {
         setTranscript(data.transcript ?? []);
+        if (data.portrait_1 || data.portrait_2) {
+          setWrestlers((current) => ({
+            ...current,
+            1: { ...current[1], imageUrl: data.portrait_1 ?? null },
+            2: { ...current[2], imageUrl: data.portrait_2 ?? null },
+          }));
+        }
         setIsResponseReady(true);
       })
       .catch((err) => {

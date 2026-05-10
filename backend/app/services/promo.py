@@ -8,15 +8,27 @@ Helpers here pull the active payload from app.context instead of
 taking it as a parameter, so deep call chains stay clean.
 """
 
+from concurrent.futures import ThreadPoolExecutor
+
 from openai import OpenAI
 
 from app.config import settings
 from app.context import get_current_promo
 from app.prompts.prompts import prompts
-from app.schemas.promo import PromoResponse
+from app.schemas.promo import Player, PromoResponse
 from app.schemas.wrestler import Wrestler
 
 client = OpenAI(api_key=settings.openai_api_key)
+
+PORTRAIT_MODEL = "gpt-image-2"
+PORTRAIT_QUALITY = "low"
+PORTRAIT_SIZE = "1024x1536"
+
+_PORTRAIT_VIBE = {
+    "heel": "menacing, contemptuous expression, predatory body language, sneer",
+    "babyface": "intense, defiant, fired-up expression, ready for war",
+    "tweener": "cold, unreadable, calculated expression, dead-eyed stare",
+}
 
 
 
@@ -28,9 +40,42 @@ def handle_promo_submission() -> PromoResponse:
     for i, player in enumerate(payload.players, start=1):
         print(f"  Player {i}: {player.model_dump()}")
 
-    transcript = generate_promo_response()
+    transcript, portrait_1, portrait_2 = generate_promo_response()
 
-    return PromoResponse(transcript=transcript)
+    return PromoResponse(
+        transcript=transcript,
+        portrait_1=portrait_1,
+        portrait_2=portrait_2,
+    )
+
+
+def generate_portrait(player: Player) -> str | None:
+    """Generate a single wrestler portrait. Returns a data URL or None on failure."""
+    vibe = _PORTRAIT_VIBE.get(player.alignment, "intense, fired-up expression")
+    prompt = (
+        f"Full-body professional wrestler promo portrait of {player.name}. "
+        f"{player.look}. "
+        f"{vibe}. "
+        "Standing alone in a dark, fog-filled arena under a single dramatic overhead "
+        "spotlight, with red and gold rim lighting from behind, smoke at floor level, "
+        "and the suggestion of a wrestling ring fading into the shadows. "
+        "Vertical composition, wrestler centered and full body in frame from head to "
+        "mid-thigh. Cinematic 35mm film, high contrast, dramatic shadows, photorealistic. "
+        "No on-screen text, no logos, no watermarks, no captions."
+    )
+    try:
+        result = client.images.generate(
+            model=PORTRAIT_MODEL,
+            prompt=prompt,
+            size=PORTRAIT_SIZE,
+            quality=PORTRAIT_QUALITY,
+            n=1,
+        )
+        b64 = result.data[0].b64_json
+        return f"data:image/png;base64,{b64}"
+    except Exception as exc:
+        print(f"Portrait generation failed for {player.name}: {exc}")
+        return None
 
 
 def generate_promo_response():
@@ -67,16 +112,25 @@ def generate_promo_response():
     promo_responses = []
     promo_history = ""
 
-    for turn_idx in range(TOTAL_TURNS):
-        speaker = wrestlers_in_order[turn_idx % 2]
-        response_text = speaker.generate_promo(promo_history)
-        promo_responses.append({
-            "wrestler": speaker.name,
-            "response": response_text,
-        })
-        promo_history += f"{speaker.name}: {response_text}\n\n"
+    # Portraits generate in parallel with the turn loop so the two slowest paths
+    # (portrait calls and the sequential turn calls) overlap instead of stacking.
+    with ThreadPoolExecutor(max_workers=2) as portrait_pool:
+        portrait_1_future = portrait_pool.submit(generate_portrait, p1)
+        portrait_2_future = portrait_pool.submit(generate_portrait, p2)
 
-    return promo_responses
+        for turn_idx in range(TOTAL_TURNS):
+            speaker = wrestlers_in_order[turn_idx % 2]
+            response_text = speaker.generate_promo(promo_history)
+            promo_responses.append({
+                "wrestler": speaker.name,
+                "response": response_text,
+            })
+            promo_history += f"{speaker.name}: {response_text}\n\n"
+
+        portrait_1 = portrait_1_future.result()
+        portrait_2 = portrait_2_future.result()
+
+    return promo_responses, portrait_1, portrait_2
 
 
 def generate_mock_promo_response():
@@ -104,9 +158,10 @@ def generate_mock_promo_response():
         "Big talk for somebody about to find out what I do for a living. Bell rings. Music cuts. We see who's still standing. Game on.",
     ]
 
-    return [
+    transcript = [
         {"wrestler": wrestlers_in_order[i % 2].name, "response": line}
         for i, line in enumerate(mock_lines)
     ]
+    return transcript, None, None
 
 
