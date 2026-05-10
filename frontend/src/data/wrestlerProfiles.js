@@ -8,6 +8,7 @@ export const WRESTLER_PROFILES = [
     name: 'Rico "Livewire" Navarro',
     alignment: "babyface",
     size: "small",
+    voice: "coral",
     look:
       '5\'8", 175 lbs, compact gymnast build with rope-burned forearms and spring-loaded legs. Warm bronze skin, crooked nose broken twice, dark curls always damp by bell time. Royal-blue trunks with frayed silver lightning bolts, messy white athletic tape on wrists, scuffed red knee pads — no robe, hits the ring at a sprint. Grins at kids in the front row like they\'re family; eyes go ice-cold when the cheap shots start. Soft Texas-border vowels when he talks, louder when he flies.',
     description:
@@ -18,6 +19,7 @@ export const WRESTLER_PROFILES = [
     name: 'Ayanna "Ash" Brooks',
     alignment: "babyface",
     size: "average",
+    voice: "verse",
     look:
       '5\'9", 158 lbs, athletic frame carved from track spikes and gym rings — shoulders squared, posture military without trying. Dark brown locs braided tight at the temples, fade at the sides, a thin pale scar through her left eyebrow from a house-show mishap she laughs off. Charcoal-and-orange gear with reflective tape stripes meant to catch spotlight like highway signage; fingerless gloves, matte black boots scuffed at the toes. Stares opponents down like she\'s memorizing an evacuation route — calm until someone\'s in trouble, then she moves first.',
     description:
@@ -28,6 +30,7 @@ export const WRESTLER_PROFILES = [
     name: 'Cassius "Ledger" Rowe',
     alignment: "tweener",
     size: "big",
+    voice: "alloy",
     look:
       '6\'4", 265 lbs, heavy slab shoulders and thick wrists — moves quieter than his size suggests, like a loaded elevator. Cropped fade, salt at the temples though he\'s barely thirty, a neat boxed beard trimmed weekly whether he\'s booked or not. All-black gear with white tally-mark embroidery climbing his trunks like someone\'s counting debts. No flashy robe: walks out in a tailored charcoal coat he removes slowly, eyes scanning hardcam then hardcam again. Smile doesn\'t reach his eyes unless money just cleared.',
     description:
@@ -38,6 +41,7 @@ export const WRESTLER_PROFILES = [
     name: "Jin Park",
     alignment: "tweener",
     size: "average",
+    voice: "sage",
     look:
       '6\'0", 198 lbs, MMA-cut physique — thick neck, calm breathing, small scars along the orbital ridges he\'d rather not discuss. Black hair grown just past regulation, usually slicked back with water only. Minimalist gear: gunmetal gray shorts with a single thin white stripe, no logos, tape only where needed. Enters without pyro, circles the ring once studying corners like he\'s scouting terrain. Mic presence flat and deliberate; when he raises his voice, the room gets quieter first.',
     description:
@@ -48,6 +52,7 @@ export const WRESTLER_PROFILES = [
     name: '"Counselor" Preston Hollowell',
     alignment: "heel",
     size: "small",
+    voice: "ash",
     look:
       '5\'10", 185 lbs, dense core and manicured everything — nails filed, hair clayed, smile practiced in a mirror. Navy-and-platinum trunks cut sharp like swimwear, designer sneakers swapped for ring boots at the last second. Carries a thin brushed-steel briefcase to the ring (empty except drama); wears rimless glasses he removes before locking up like Clark Kent performing contempt. Pearls at cufflinks flash under lights; veins pop at his temples when the crowd chants against him.',
     description:
@@ -58,6 +63,7 @@ export const WRESTLER_PROFILES = [
     name: 'Ezekiel "Zeke" Morgenson',
     alignment: "heel",
     size: "giant",
+    voice: "alloy",
     look:
       '6\'11", 305 lbs, wide farm-hand bones and a neck like a loading dock. Long thinning brown hair pushed behind ears, sun-flushed cheeks, blank pleasant smile that never reaches panic when chaos erupts. Wears stained ivory overall straps over black trunks, work boots modified for the apron — looks like he stepped out of a revival tent behind the corn. Slow footsteps shake the ramp; when he talks it\'s soft scripture cadence until the threats slide in like snakebite.',
     description:

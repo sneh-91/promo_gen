@@ -15,6 +15,7 @@ class Settings(BaseSettings):
 
     openai_api_key: str | None = None
     openai_model: str = "gpt-5.4-nano"
+    openai_tts_model: str = "gpt-4o-mini-tts"
 
 
 settings = Settings()

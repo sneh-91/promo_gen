@@ -4,6 +4,7 @@ from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 
 Alignment = Literal["babyface", "tweener", "heel"]
 Size = Literal["small", "average", "big", "giant"]
+Voice = Literal["alloy", "ash", "coral", "sage", "verse"]
 
 # Trim incoming whitespace and reject empty / whitespace-only strings up front,
 # so a direct API caller can't bypass the frontend's trim() check.
@@ -22,6 +23,7 @@ class Player(BaseModel):
     name: NameStr
     alignment: Alignment
     size: Size
+    voice: Voice
     look: LookStr
     description: DescriptionStr
 
@@ -36,6 +38,9 @@ class PromoRequest(BaseModel):
 class PromoTurn(BaseModel):
     wrestler: str
     response: str
+    voice: Voice
+    audio_base64: str | None = None
+    audio_format: Literal["mp3"] | None = None
 
 
 class PromoResponse(BaseModel):

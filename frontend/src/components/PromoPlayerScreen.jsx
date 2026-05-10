@@ -1,17 +1,24 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { WrestlerAvatar } from "./WrestlerAvatar";
 
 const TYPE_SPEED_MS = 30;
-const HOLD_AFTER_REVEAL_MS = 4000;
+const HOLD_AFTER_REVEAL_MS = 600;
+const FIRST_TURN_AUDIO_START_DELAY_MS = 250;
 
 export function PromoPlayerScreen({ transcript, wrestlers, onComplete }) {
   const [turnIndex, setTurnIndex] = useState(0);
   const [revealedChars, setRevealedChars] = useState(0);
   const [phase, setPhase] = useState("typing");
+  const [audioDone, setAudioDone] = useState(true);
+  const audioRef = useRef(null);
 
   const turn = transcript[turnIndex];
   const fullText = turn?.response ?? "";
+  const audioSrc =
+    turn?.audio_base64 && turn?.audio_format
+      ? `data:audio/${turn.audio_format};base64,${turn.audio_base64}`
+      : null;
 
   const { wrestler, side } = useMemo(() => {
     const w1 = wrestlers[1];
@@ -24,7 +31,37 @@ export function PromoPlayerScreen({ transcript, wrestlers, onComplete }) {
   useEffect(() => {
     setRevealedChars(0);
     setPhase("typing");
-  }, [turnIndex]);
+    setAudioDone(!audioSrc);
+  }, [turnIndex, audioSrc]);
+
+  useEffect(() => {
+    if (!audioSrc) return undefined;
+
+    const audio = new Audio(audioSrc);
+    audioRef.current = audio;
+    const playDelayMs = turnIndex === 0 ? FIRST_TURN_AUDIO_START_DELAY_MS : 0;
+
+    const markDone = () => setAudioDone(true);
+    audio.addEventListener("ended", markDone);
+    audio.addEventListener("error", markDone);
+
+    const playTimer = setTimeout(() => {
+      audio.play().catch(() => {
+        setAudioDone(true);
+      });
+    }, playDelayMs);
+
+    return () => {
+      clearTimeout(playTimer);
+      audio.pause();
+      audio.currentTime = 0;
+      audio.removeEventListener("ended", markDone);
+      audio.removeEventListener("error", markDone);
+      if (audioRef.current === audio) {
+        audioRef.current = null;
+      }
+    };
+  }, [audioSrc, turnIndex]);
 
   useEffect(() => {
     if (phase !== "typing") return;
@@ -37,7 +74,7 @@ export function PromoPlayerScreen({ transcript, wrestlers, onComplete }) {
   }, [phase, revealedChars, fullText.length]);
 
   useEffect(() => {
-    if (phase !== "holding") return;
+    if (phase !== "holding" || !audioDone) return;
     const id = setTimeout(() => {
       if (turnIndex + 1 >= transcript.length) {
         onComplete();
@@ -46,7 +83,7 @@ export function PromoPlayerScreen({ transcript, wrestlers, onComplete }) {
       }
     }, HOLD_AFTER_REVEAL_MS);
     return () => clearTimeout(id);
-  }, [phase, turnIndex, transcript.length, onComplete]);
+  }, [audioDone, phase, turnIndex, transcript.length, onComplete]);
 
   const handleSkip = () => {
     if (phase === "typing") {
@@ -54,6 +91,8 @@ export function PromoPlayerScreen({ transcript, wrestlers, onComplete }) {
       setPhase("holding");
       return;
     }
+    audioRef.current?.pause();
+    audioRef.current = null;
     if (turnIndex + 1 >= transcript.length) {
       onComplete();
     } else {

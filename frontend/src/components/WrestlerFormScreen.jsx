@@ -4,6 +4,7 @@ import {
   ALIGNMENT_OPTIONS,
   FIELD_LIMITS,
   SIZE_OPTIONS,
+  VOICE_OPTIONS,
 } from "../constants";
 import { ArrowIcon, ShuffleIcon } from "./Icons";
 import { FieldCounter } from "./FieldCounter";
@@ -93,6 +94,28 @@ export function WrestlerFormScreen({
               columns={4}
               onChange={updateField}
             />
+          </div>
+
+          <div className={errors.voice ? "field has-error" : "field"}>
+            <label className="label" htmlFor="voice">Voice</label>
+            <div className="voice-select-wrap">
+              <select
+                id="voice"
+                name="voice"
+                className="input voice-select"
+                value={wrestler.voice}
+                onChange={(event) => updateField("voice", event.target.value)}
+              >
+                {VOICE_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <p className="voice-help">
+              {VOICE_OPTIONS.find((option) => option.value === wrestler.voice)?.subLabel ?? ""}
+            </p>
           </div>
 
           <div className={errors.look ? "field has-error" : "field"}>

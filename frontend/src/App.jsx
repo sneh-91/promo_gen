@@ -24,6 +24,7 @@ function validateWrestler(wrestler) {
     name: !wrestler.name.trim(),
     alignment: !wrestler.alignment,
     size: !wrestler.size,
+    voice: !wrestler.voice,
     look: !wrestler.look.trim(),
     description: !wrestler.description.trim(),
   };
@@ -85,6 +86,7 @@ export function App() {
         name: profile.name,
         alignment: profile.alignment,
         size: profile.size,
+        voice: profile.voice,
         look: profile.look,
         description: profile.description,
       },

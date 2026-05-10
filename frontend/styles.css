@@ -462,6 +462,61 @@ body::before {
   border-radius: var(--radius-sm);
 }
 
+.voice-select-wrap {
+  position: relative;
+  min-width: 0;
+}
+
+.voice-select {
+  width: 100%;
+  appearance: none;
+  height: 40px;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-right: 44px;
+}
+
+.voice-select-wrap::after {
+  content: "";
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--accent);
+  border-bottom: 2px solid var(--accent);
+  transform: translateY(-65%) rotate(45deg);
+  pointer-events: none;
+  transition: border-color 0.18s ease, transform 0.18s ease;
+}
+
+.voice-select-wrap::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  right: 36px;
+  width: 1px;
+  background: linear-gradient(180deg, transparent 0%, rgba(225, 6, 0, 0.16) 18%, rgba(225, 6, 0, 0.4) 50%, rgba(225, 6, 0, 0.16) 82%, transparent 100%);
+  pointer-events: none;
+}
+
+.voice-select-wrap:hover::after {
+  border-color: var(--accent-hover);
+}
+
+.voice-select-wrap:focus-within::after {
+  border-color: var(--accent-hover);
+  transform: translateY(-60%) rotate(45deg);
+}
+
+.voice-help {
+  font-size: 11px;
+  color: var(--fg-dim);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
 /* ---------- Segmented control ---------- */
 .segmented {
   display: grid;
@@ -1122,6 +1177,11 @@ body::before {
   width: auto;
   color: rgba(225, 6, 0, 0.78);
   transition: opacity 0.3s ease, filter 0.3s ease;
+}
+
+.tape-avatar.avatar--image {
+  width: 100%;
+  height: 100%;
 }
 
 .tape-side[data-tape-side="2"] .tape-avatar {

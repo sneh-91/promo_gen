@@ -4,9 +4,18 @@ export const EMPTY_WRESTLER = {
   name: "",
   alignment: "",
   size: "",
+  voice: "alloy",
   look: "",
   description: "",
 };
+
+export const VOICE_OPTIONS = [
+  { value: "alloy", label: "Main Event Power", subLabel: "Deep, punchy, dominant" },
+  { value: "ash", label: "Street Fighter Edge", subLabel: "Raspy, gritty, aggressive" },
+  { value: "coral", label: "Showboat Charisma", subLabel: "Bright, flashy, high energy" },
+  { value: "sage", label: "Cold Technician", subLabel: "Calm, controlled, surgical" },
+  { value: "verse", label: "Arena Narrator", subLabel: "Smooth, dramatic, cinematic" },
+];
 
 export const ALIGNMENT_OPTIONS = [
   { value: "babyface", label: "Babyface", subLabel: "Hero", className: "seg-pill--baby" },

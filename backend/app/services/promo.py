@@ -15,18 +15,20 @@ from app.context import get_current_promo
 from app.prompts.prompts import prompts
 from app.schemas.promo import Player, PromoResponse
 from app.services.openai_client import get_openai_client
+from app.services.tts import generate_turn_audio
 from app.services.wrestler import Wrestler
 
 PORTRAIT_MODEL = "gpt-image-2"
 PORTRAIT_QUALITY = "low"
 PORTRAIT_SIZE = "1024x1536"
+PORTRAIT_MAX_ATTEMPTS = 2
+TOTAL_TURNS = 6
 
 _PORTRAIT_VIBE = {
     "heel": "menacing, contemptuous expression, predatory body language, sneer",
     "babyface": "intense, defiant, fired-up expression, ready for war",
     "tweener": "cold, unreadable, calculated expression, dead-eyed stare",
 }
-
 
 
 def handle_promo_submission() -> PromoResponse:
@@ -60,19 +62,25 @@ def generate_portrait(player: Player) -> str | None:
         "mid-thigh. Cinematic 35mm film, high contrast, dramatic shadows, photorealistic. "
         "No on-screen text, no logos, no watermarks, no captions."
     )
-    try:
-        result = get_openai_client().images.generate(
-            model=PORTRAIT_MODEL,
-            prompt=prompt,
-            size=PORTRAIT_SIZE,
-            quality=PORTRAIT_QUALITY,
-            n=1,
-        )
-        b64 = result.data[0].b64_json
-        return f"data:image/png;base64,{b64}"
-    except Exception as exc:
-        print(f"Portrait generation failed for {player.name}: {exc}")
-        return None
+    for attempt in range(1, PORTRAIT_MAX_ATTEMPTS + 1):
+        try:
+            result = get_openai_client().images.generate(
+                model=PORTRAIT_MODEL,
+                prompt=prompt,
+                size=PORTRAIT_SIZE,
+                quality=PORTRAIT_QUALITY,
+                n=1,
+            )
+            b64 = result.data[0].b64_json
+            if not b64:
+                raise ValueError("Image response did not include base64 data.")
+            return f"data:image/png;base64,{b64}"
+        except Exception as exc:
+            print(
+                f"Portrait generation failed for {player.name} "
+                f"(attempt {attempt}/{PORTRAIT_MAX_ATTEMPTS}): {exc}"
+            )
+    return None
 
 
 def generate_promo_response():
@@ -80,10 +88,11 @@ def generate_promo_response():
     p1, p2 = payload.players[0], payload.players[1]
     openai_client = get_openai_client()
 
-    WRESTLER_1 = Wrestler(
+    wrestler_1 = Wrestler(
         name=p1.name,
         alignment=p1.alignment,
         size=p1.size,
+        voice=p1.voice,
         look=p1.look,
         description=p1.description,
         opponent=p2,
@@ -91,10 +100,11 @@ def generate_promo_response():
         system_prompt=prompts[p1.alignment],
         client=openai_client,
     )
-    WRESTLER_2 = Wrestler(
+    wrestler_2 = Wrestler(
         name=p2.name,
         alignment=p2.alignment,
         size=p2.size,
+        voice=p2.voice,
         look=p2.look,
         description=p2.description,
         opponent=p1,
@@ -103,10 +113,9 @@ def generate_promo_response():
         client=openai_client,
     )
     wrestlers_in_order = (
-        [WRESTLER_1, WRESTLER_2] if payload.first_on_mic == 1 else [WRESTLER_2, WRESTLER_1]
+        [wrestler_1, wrestler_2] if payload.first_on_mic == 1 else [wrestler_2, wrestler_1]
     )
 
-    TOTAL_TURNS = 6
     promo_responses = []
     promo_history = ""
 
@@ -119,10 +128,20 @@ def generate_promo_response():
         for turn_idx in range(TOTAL_TURNS):
             speaker = wrestlers_in_order[turn_idx % 2]
             response_text = speaker.generate_promo(promo_history)
-            promo_responses.append({
-                "wrestler": speaker.name,
-                "response": response_text,
-            })
+            audio_base64, audio_format = generate_turn_audio(
+                text=response_text,
+                voice=speaker.voice,
+                alignment=speaker.alignment,
+            )
+            promo_responses.append(
+                {
+                    "wrestler": speaker.name,
+                    "response": response_text,
+                    "voice": speaker.voice,
+                    "audio_base64": audio_base64,
+                    "audio_format": audio_format,
+                }
+            )
             promo_history += f"{speaker.name}: {response_text}\n\n"
 
         portrait_1 = portrait_1_future.result()
@@ -149,7 +168,7 @@ def generate_mock_promo_response():
 
     mock_lines = [
         "This is my house. Tonight, the lights are on me, the crowd is mine, and you... you're just a name on the marquee. I didn't crawl through ten years of dirt and broken bones to share a ring with someone who thinks they belong here. Welcome to the deep end.",
-        "Your house? Your house? I've been knocking down doors while you were still asking permission. The crowd doesn't owe you a damn thing — and neither do I. So save the speech, because the only marquee I see tonight has my name carved on top of yours.",
+        "Your house? Your house? I've been knocking down doors while you were still asking permission. The crowd doesn't owe you a damn thing - and neither do I. So save the speech, because the only marquee I see tonight has my name carved on top of yours.",
         "Cute. Real cute. You've got the lines memorized like a kid on his first day of drama class. But scripts don't win matches, kid. Heart does. Pain does. And from where I'm standing, you've got neither.",
         "Pain? You wanna talk pain? I've taken hits from men twice your size and walked out smiling. The only thing keeping you in this business is the volume on the entrance music. Cut it off and you're nothing.",
         "Then prove it. Stop running your mouth and put hands on me. Or is that not in the script either? Because I'm starting to think the only thing you can deliver... is excuses.",
@@ -157,9 +176,13 @@ def generate_mock_promo_response():
     ]
 
     transcript = [
-        {"wrestler": wrestlers_in_order[i % 2].name, "response": line}
+        {
+            "wrestler": wrestlers_in_order[i % 2].name,
+            "response": line,
+            "voice": wrestlers_in_order[i % 2].voice,
+            "audio_base64": None,
+            "audio_format": None,
+        }
         for i, line in enumerate(mock_lines)
     ]
     return transcript, None, None
-
-

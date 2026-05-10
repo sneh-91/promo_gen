@@ -1,15 +1,24 @@
+import { useEffect, useState } from "react";
+
 /**
  * Generic wrestler silhouette. Swappable to a real image later by adding
- * an imageUrl field on the wrestler object — this component reads it
+ * an imageUrl field on the wrestler object - this component reads it
  * and chooses what to render. No callers need to change.
  */
 export function WrestlerAvatar({ wrestler, className = "" }) {
-  if (wrestler?.imageUrl) {
+  const [imageFailed, setImageFailed] = useState(false);
+
+  useEffect(() => {
+    setImageFailed(false);
+  }, [wrestler?.imageUrl]);
+
+  if (wrestler?.imageUrl && !imageFailed) {
     return (
       <img
         className={`avatar avatar--image ${className}`.trim()}
         src={wrestler.imageUrl}
         alt={wrestler.name}
+        onError={() => setImageFailed(true)}
       />
     );
   }
