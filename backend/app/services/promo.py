@@ -10,15 +10,12 @@ taking it as a parameter, so deep call chains stay clean.
 
 from concurrent.futures import ThreadPoolExecutor
 
-from openai import OpenAI
-
 from app.config import settings
 from app.context import get_current_promo
 from app.prompts.prompts import prompts
 from app.schemas.promo import Player, PromoResponse
-from app.schemas.wrestler import Wrestler
-
-client = OpenAI(api_key=settings.openai_api_key)
+from app.services.openai_client import get_openai_client
+from app.services.wrestler import Wrestler
 
 PORTRAIT_MODEL = "gpt-image-2"
 PORTRAIT_QUALITY = "low"
@@ -64,7 +61,7 @@ def generate_portrait(player: Player) -> str | None:
         "No on-screen text, no logos, no watermarks, no captions."
     )
     try:
-        result = client.images.generate(
+        result = get_openai_client().images.generate(
             model=PORTRAIT_MODEL,
             prompt=prompt,
             size=PORTRAIT_SIZE,
@@ -81,6 +78,7 @@ def generate_portrait(player: Player) -> str | None:
 def generate_promo_response():
     payload = get_current_promo()
     p1, p2 = payload.players[0], payload.players[1]
+    openai_client = get_openai_client()
 
     WRESTLER_1 = Wrestler(
         name=p1.name,
@@ -91,7 +89,7 @@ def generate_promo_response():
         opponent=p2,
         model_name=settings.openai_model,
         system_prompt=prompts[p1.alignment],
-        client=client,
+        client=openai_client,
     )
     WRESTLER_2 = Wrestler(
         name=p2.name,
@@ -102,7 +100,7 @@ def generate_promo_response():
         opponent=p1,
         model_name=settings.openai_model,
         system_prompt=prompts[p2.alignment],
-        client=client,
+        client=openai_client,
     )
     wrestlers_in_order = (
         [WRESTLER_1, WRESTLER_2] if payload.first_on_mic == 1 else [WRESTLER_2, WRESTLER_1]

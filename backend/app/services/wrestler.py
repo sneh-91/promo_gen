@@ -1,3 +1,17 @@
+"""Wrestler agent.
+
+Wraps a single LLM persona (one side of the promo). Holds the per-wrestler
+system prompt + identity block, and knows how to ask the model for the
+next line given the promo so far.
+
+Lives under services/ rather than schemas/ because this is behavior +
+side effects (LLM calls), not a passive data shape. The passive shape is
+`Player` in app.schemas.promo.
+"""
+
+from app.schemas.promo import Player
+
+
 class Wrestler:
 
     def __init__(
@@ -7,7 +21,7 @@ class Wrestler:
         size,
         look,
         description,
-        opponent,
+        opponent: Player,
         model_name,
         system_prompt,
         client,
