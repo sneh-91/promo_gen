@@ -267,6 +267,12 @@ body::before {
   margin: 0 auto;
 }
 
+.form-shuffle {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
 /* ---------- Stepper ---------- */
 .stepper {
   display: flex;

@@ -5,7 +5,7 @@ import {
   FIELD_LIMITS,
   SIZE_OPTIONS,
 } from "../constants";
-import { ArrowIcon } from "./Icons";
+import { ArrowIcon, ShuffleIcon } from "./Icons";
 import { FieldCounter } from "./FieldCounter";
 import { SegmentedOptions } from "./SegmentedOptions";
 import { Stepper } from "./Stepper";
@@ -16,6 +16,7 @@ export function WrestlerFormScreen({
   wrestler,
   onBack,
   onChange,
+  onShuffle,
   onSubmit,
 }) {
   const nameRef = useRef(null);
@@ -41,6 +42,17 @@ export function WrestlerFormScreen({
           <p className="page-sub">
             Give the creative team enough heat, style, and swagger to book the segment.
           </p>
+          <div className="form-shuffle">
+            <button
+              className="btn btn--ghost btn--small"
+              type="button"
+              onClick={onShuffle}
+              aria-label="Fill every field with a random preset wrestler"
+            >
+              <ShuffleIcon />
+              <span>Shuffle</span>
+            </button>
+          </div>
         </header>
 
         <form className="form" noValidate onSubmit={onSubmit}>

@@ -10,6 +10,7 @@ import { TaleOfTheTapeScreen } from "./components/TaleOfTheTapeScreen";
 import { TheEndScreen } from "./components/TheEndScreen";
 import { WelcomeScreen } from "./components/WelcomeScreen";
 import { WrestlerFormScreen } from "./components/WrestlerFormScreen";
+import { WRESTLER_PROFILES } from "./data/wrestlerProfiles";
 
 const createWrestler = () => ({ ...EMPTY_WRESTLER });
 
@@ -73,6 +74,22 @@ export function App() {
     } else {
       goToWrestler(1);
     }
+  };
+
+  const handleShuffleProfile = () => {
+    const profile =
+      WRESTLER_PROFILES[Math.floor(Math.random() * WRESTLER_PROFILES.length)];
+    setWrestlers((current) => ({
+      ...current,
+      [activeWrestler]: {
+        name: profile.name,
+        alignment: profile.alignment,
+        size: profile.size,
+        look: profile.look,
+        description: profile.description,
+      },
+    }));
+    setErrors({});
   };
 
   const handleFormSubmit = (event) => {
@@ -145,6 +162,7 @@ export function App() {
           wrestler={wrestlers[activeWrestler]}
           onBack={handleBackFromForm}
           onChange={updateWrestler}
+          onShuffle={handleShuffleProfile}
           onSubmit={handleFormSubmit}
         />
       )}
