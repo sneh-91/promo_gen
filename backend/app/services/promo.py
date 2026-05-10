@@ -28,7 +28,7 @@ def handle_promo_submission() -> PromoResponse:
     for i, player in enumerate(payload.players, start=1):
         print(f"  Player {i}: {player.model_dump()}")
 
-    transcript = generate_mock_promo_response()
+    transcript = generate_promo_response()
 
     return PromoResponse(transcript=transcript)
 
