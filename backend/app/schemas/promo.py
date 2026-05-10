@@ -21,6 +21,10 @@ class PromoRequest(BaseModel):
     first_on_mic: Literal[1, 2] = Field(..., alias="firstOnMic")
 
 
+class PromoTurn(BaseModel):
+    wrestler: str
+    response: str
+
+
 class PromoResponse(BaseModel):
-    status: str
-    player_count: int
+    transcript: list[PromoTurn]
