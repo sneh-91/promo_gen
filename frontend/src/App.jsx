@@ -3,10 +3,20 @@ import { useEffect, useState } from "react";
 import { submitPromo } from "./api/promo";
 import { EMPTY_WRESTLER } from "./constants";
 import { LandingScreen } from "./components/LandingScreen";
+import { PromoPlayerScreen } from "./components/PromoPlayerScreen";
+import { PromoStartScreen } from "./components/PromoStartScreen";
 import { ReviewScreen } from "./components/ReviewScreen";
+import { TaleOfTheTapeScreen } from "./components/TaleOfTheTapeScreen";
+import { TheEndScreen } from "./components/TheEndScreen";
+import { WelcomeScreen } from "./components/WelcomeScreen";
 import { WrestlerFormScreen } from "./components/WrestlerFormScreen";
 
 const createWrestler = () => ({ ...EMPTY_WRESTLER });
+
+const initialWrestlers = () => ({
+  1: createWrestler(),
+  2: createWrestler(),
+});
 
 function validateWrestler(wrestler) {
   return {
@@ -29,10 +39,9 @@ export function App() {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmLabel, setConfirmLabel] = useState("Cut the Promo");
-  const [wrestlers, setWrestlers] = useState({
-    1: createWrestler(),
-    2: createWrestler(),
-  });
+  const [wrestlers, setWrestlers] = useState(initialWrestlers);
+  const [transcript, setTranscript] = useState([]);
+  const [isResponseReady, setIsResponseReady] = useState(false);
 
   useEffect(() => {
     window.scrollTo({
@@ -82,19 +91,37 @@ export function App() {
     }
   };
 
-  const handleConfirm = async () => {
+  const handleConfirm = () => {
     setIsSubmitting(true);
     setConfirmLabel("Sending...");
+    setTranscript([]);
+    setIsResponseReady(false);
+    setScreen("welcome");
 
-    try {
-      const data = await submitPromo([wrestlers[1], wrestlers[2]], firstOnMic);
-      console.log("Promo response:", data);
-      setConfirmLabel("Bell's Rung!");
-    } catch (err) {
-      console.error("Promo submission failed:", err);
-      setConfirmLabel("Try Again");
-      setIsSubmitting(false);
-    }
+    submitPromo([wrestlers[1], wrestlers[2]], firstOnMic)
+      .then((data) => {
+        setTranscript(data.transcript ?? []);
+        setIsResponseReady(true);
+      })
+      .catch((err) => {
+        console.error("Promo submission failed:", err);
+        setConfirmLabel("Try Again");
+        setIsSubmitting(false);
+        setScreen("review");
+        window.alert("Could not reach the booking desk. Please try again.");
+      });
+  };
+
+  const handleRestart = () => {
+    setScreen("landing");
+    setActiveWrestler(1);
+    setFirstOnMic(1);
+    setErrors({});
+    setIsSubmitting(false);
+    setConfirmLabel("Cut the Promo");
+    setWrestlers(initialWrestlers());
+    setTranscript([]);
+    setIsResponseReady(false);
   };
 
   return (
@@ -127,6 +154,33 @@ export function App() {
           onFirstOnMicChange={setFirstOnMic}
         />
       )}
+
+      {screen === "welcome" && (
+        <WelcomeScreen onComplete={() => setScreen("taleOfTape")} />
+      )}
+
+      {screen === "taleOfTape" && (
+        <TaleOfTheTapeScreen
+          wrestlers={wrestlers}
+          firstOnMic={firstOnMic}
+          isResponseReady={isResponseReady}
+          onComplete={() => setScreen("promoStart")}
+        />
+      )}
+
+      {screen === "promoStart" && (
+        <PromoStartScreen onComplete={() => setScreen("promo")} />
+      )}
+
+      {screen === "promo" && (
+        <PromoPlayerScreen
+          transcript={transcript}
+          wrestlers={wrestlers}
+          onComplete={() => setScreen("end")}
+        />
+      )}
+
+      {screen === "end" && <TheEndScreen onRestart={handleRestart} />}
     </>
   );
 }

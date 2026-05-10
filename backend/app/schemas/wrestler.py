@@ -1,6 +1,17 @@
 class Wrestler:
 
-    def __init__(self, name, alignment, size, look, description, model_name, system_prompt, client):
+    def __init__(
+        self,
+        name,
+        alignment,
+        size,
+        look,
+        description,
+        opponent,
+        model_name,
+        system_prompt,
+        client,
+    ):
         self.name = name
         self.alignment = alignment.lower()
         self.size = size.lower()
@@ -9,41 +20,38 @@ class Wrestler:
         self.model = model_name
         self.client = client
 
-        system_prompt_addded_context = f"""
-        Your identity:
+        identity_block = f"""
+
+Your identity:
 - Name: {name}
-- Alignment: {alignment} 
+- Alignment: {alignment}
 - Size: {size}
 - Look: {look}
 - Description: {description}
+
+Your opponent:
+- Name: {opponent.name}
+- Alignment: {opponent.alignment}
+- Size: {opponent.size}
+- Look: {opponent.look}
+- Description: {opponent.description}
 """
-        self.system_prompt = system_prompt + system_prompt_addded_context
+        self.system_prompt = system_prompt + identity_block
 
     def generate_promo(self, promo_history):
-        
-        
-        user_prompt = f""" You are a WWE wrestler in a live promo battle.
+        if promo_history.strip():
+            user_prompt = (
+                "Promo so far:\n"
+                f"{promo_history}\n"
+                "Continue the promo. Respond to something specific the last "
+                "speaker just said, then push the confrontation forward."
+            )
+        else:
+            user_prompt = (
+                "This is the opening line of the promo. Address the crowd, "
+                "call out your opponent by name, and set the tone for the night."
+            )
 
-Style rules:
-- Stay fully in character
-- Speak like you're addressing a live crowd or other wrestlers
-- Keep it INTENSE, emotional, and DIRECT
-- Reference something specific the last speaker said IF POSSIBLE
-- Do NOT repeat generic lines or give speeches
-- Do NOT speak for other wrestlers
-- Keep it under 120 words
-- RESPONSE FORMAT: Single paragraph, blurb only; use Markdown (e.g. **bold**); no code blocks
-
-Tone guidance:
-- Heel → arrogant, mocking, disrespectful, occasional swearing
-- Face → confident, resilient, inspirational, fires back without whining
-- Tweener → blunt, honest, calls out BOTH sides, sarcastic
-
-Here is the promo so far:
-{promo_history}
-
-Now continue the promo. Make your response hit hard and move the confrontation forward.
-        """
         response = self.client.chat.completions.create(
             model=self.model,
             messages=[

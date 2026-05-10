@@ -35,8 +35,30 @@ def handle_promo_submission() -> PromoResponse:
 
 def generate_promo_response():
     payload = get_current_promo()
-    WRESTLER_1 = Wrestler(name=payload.players[0].name, alignment=payload.players[0].alignment, size=payload.players[0].size, look=payload.players[0].look, description=payload.players[0].description, model_name=settings.openai_model, system_prompt=prompts[payload.players[0].alignment], client=client)
-    WRESTLER_2 = Wrestler(name=payload.players[1].name, alignment=payload.players[1].alignment, size=payload.players[1].size, look=payload.players[1].look, description=payload.players[1].description, model_name=settings.openai_model, system_prompt=prompts[payload.players[1].alignment], client=client)
+    p1, p2 = payload.players[0], payload.players[1]
+
+    WRESTLER_1 = Wrestler(
+        name=p1.name,
+        alignment=p1.alignment,
+        size=p1.size,
+        look=p1.look,
+        description=p1.description,
+        opponent=p2,
+        model_name=settings.openai_model,
+        system_prompt=prompts[p1.alignment],
+        client=client,
+    )
+    WRESTLER_2 = Wrestler(
+        name=p2.name,
+        alignment=p2.alignment,
+        size=p2.size,
+        look=p2.look,
+        description=p2.description,
+        opponent=p1,
+        model_name=settings.openai_model,
+        system_prompt=prompts[p2.alignment],
+        client=client,
+    )
     wrestlers_in_order = (
         [WRESTLER_1, WRESTLER_2] if payload.first_on_mic == 1 else [WRESTLER_2, WRESTLER_1]
     )
@@ -74,14 +96,14 @@ def generate_mock_promo_response():
     )
 
     mock_lines = [
-        "**This is my house.** Tonight, the lights are on me, the crowd is mine, and you... you're just a name on the marquee. I didn't crawl through ten years of dirt and broken bones to share a ring with someone who thinks they belong here. Welcome to the deep end.",
-        "Your house? *Your house?* I've been knocking down doors while you were still asking permission. The crowd doesn't owe you a damn thing — and neither do I. So save the speech, because the only marquee I see tonight has my name carved on top of yours.",
-        "Cute. Real cute. You've got the lines memorized like a kid on his first day of drama class. But scripts don't win matches, kid. **Heart** does. **Pain** does. And from where I'm standing, you've got neither.",
+        "This is my house. Tonight, the lights are on me, the crowd is mine, and you... you're just a name on the marquee. I didn't crawl through ten years of dirt and broken bones to share a ring with someone who thinks they belong here. Welcome to the deep end.",
+        "Your house? Your house? I've been knocking down doors while you were still asking permission. The crowd doesn't owe you a damn thing — and neither do I. So save the speech, because the only marquee I see tonight has my name carved on top of yours.",
+        "Cute. Real cute. You've got the lines memorized like a kid on his first day of drama class. But scripts don't win matches, kid. Heart does. Pain does. And from where I'm standing, you've got neither.",
         "Pain? You wanna talk pain? I've taken hits from men twice your size and walked out smiling. The only thing keeping you in this business is the volume on the entrance music. Cut it off and you're nothing.",
         "Then prove it. Stop running your mouth and put hands on me. Or is that not in the script either? Because I'm starting to think the only thing you can deliver... is excuses.",
-        "Excuses? I don't make 'em. I make **statements**. And tonight's statement is gonna be your face on the canvas while this entire building counts to three.",
-        "You hear that? The crowd doesn't believe you. Neither do I. So when that bell rings — and trust me, it's about to — don't blink. Because I'm not just here to win. I'm here to *retire* you.",
-        "Big talk for somebody about to find out what I do for a living. Bell rings. Music cuts. We see who's still standing. **Game on.**",
+        "Excuses? I don't make 'em. I make statements. And tonight's statement is gonna be your face on the canvas while this entire building counts to three.",
+        "You hear that? The crowd doesn't believe you. Neither do I. So when that bell rings — and trust me, it's about to — don't blink. Because I'm not just here to win. I'm here to retire you.",
+        "Big talk for somebody about to find out what I do for a living. Bell rings. Music cuts. We see who's still standing. Game on.",
     ]
 
     return [
