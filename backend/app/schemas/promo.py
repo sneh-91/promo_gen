@@ -47,3 +47,24 @@ class PromoResponse(BaseModel):
     transcript: list[PromoTurn]
     portrait_1: str | None = None
     portrait_2: str | None = None
+
+
+class JudgeRequest(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    players: list[Player] = Field(..., min_length=2, max_length=2)
+    transcript: list[PromoTurn] = Field(..., min_length=1)
+    first_on_mic: Literal[1, 2] = Field(..., alias="firstOnMic")
+
+
+class JudgeScore(BaseModel):
+    wrestler_name: str
+    score: float = Field(..., ge=0, le=10)
+
+
+class JudgeResponse(BaseModel):
+    winner_name: str
+    winner_index: Literal[1, 2]
+    summary_line: str
+    reason: str
+    scores: list[JudgeScore] = Field(..., min_length=2, max_length=2)

@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-import { submitPromo } from "./api/promo";
+import { submitJudge, submitPromo } from "./api/promo";
 import { EMPTY_WRESTLER } from "./constants";
 import { LandingScreen } from "./components/LandingScreen";
 import { PromoPlayerScreen } from "./components/PromoPlayerScreen";
 import { PromoStartScreen } from "./components/PromoStartScreen";
 import { ReviewScreen } from "./components/ReviewScreen";
 import { TaleOfTheTapeScreen } from "./components/TaleOfTheTapeScreen";
-import { TheEndScreen } from "./components/TheEndScreen";
+import { VerdictScreen } from "./components/VerdictScreen";
 import { WelcomeScreen } from "./components/WelcomeScreen";
 import { WrestlerFormScreen } from "./components/WrestlerFormScreen";
 import { WRESTLER_PROFILES } from "./data/wrestlerProfiles";
@@ -35,6 +35,7 @@ function hasErrors(errors) {
 }
 
 export function App() {
+  const promoRunRef = useRef(0);
   const [screen, setScreen] = useState("landing");
   const [activeWrestler, setActiveWrestler] = useState(1);
   const [firstOnMic, setFirstOnMic] = useState(1);
@@ -44,6 +45,8 @@ export function App() {
   const [wrestlers, setWrestlers] = useState(initialWrestlers);
   const [transcript, setTranscript] = useState([]);
   const [isResponseReady, setIsResponseReady] = useState(false);
+  const [judgeResult, setJudgeResult] = useState(null);
+  const [isJudgePending, setIsJudgePending] = useState(false);
 
   useEffect(() => {
     window.scrollTo({
@@ -111,15 +114,21 @@ export function App() {
   };
 
   const handleConfirm = () => {
+    const runId = promoRunRef.current + 1;
+    promoRunRef.current = runId;
     setIsSubmitting(true);
     setConfirmLabel("Sending...");
     setTranscript([]);
     setIsResponseReady(false);
+    setJudgeResult(null);
+    setIsJudgePending(false);
     setScreen("welcome");
 
     submitPromo([wrestlers[1], wrestlers[2]], firstOnMic)
       .then((data) => {
-        setTranscript(data.transcript ?? []);
+        if (promoRunRef.current !== runId) return;
+        const nextTranscript = data.transcript ?? [];
+        setTranscript(nextTranscript);
         if (data.portrait_1 || data.portrait_2) {
           setWrestlers((current) => ({
             ...current,
@@ -128,8 +137,21 @@ export function App() {
           }));
         }
         setIsResponseReady(true);
+        setIsJudgePending(true);
+        submitJudge([wrestlers[1], wrestlers[2]], nextTranscript, firstOnMic)
+          .then((judgeData) => {
+            if (promoRunRef.current !== runId) return;
+            setJudgeResult(judgeData);
+            setIsJudgePending(false);
+          })
+          .catch((judgeErr) => {
+            if (promoRunRef.current !== runId) return;
+            console.error("Judge submission failed:", judgeErr);
+            setIsJudgePending(false);
+          });
       })
       .catch((err) => {
+        if (promoRunRef.current !== runId) return;
         console.error("Promo submission failed:", err);
         setConfirmLabel("Try Again");
         setIsSubmitting(false);
@@ -139,6 +161,7 @@ export function App() {
   };
 
   const handleRestart = () => {
+    promoRunRef.current += 1;
     setScreen("landing");
     setActiveWrestler(1);
     setFirstOnMic(1);
@@ -148,6 +171,8 @@ export function App() {
     setWrestlers(initialWrestlers());
     setTranscript([]);
     setIsResponseReady(false);
+    setJudgeResult(null);
+    setIsJudgePending(false);
   };
 
   return (
@@ -205,11 +230,18 @@ export function App() {
         <PromoPlayerScreen
           transcript={transcript}
           wrestlers={wrestlers}
-          onComplete={() => setScreen("end")}
+          onComplete={() => setScreen("verdict")}
         />
       )}
 
-      {screen === "end" && <TheEndScreen onRestart={handleRestart} />}
+      {screen === "verdict" && (
+        <VerdictScreen
+          isJudgePending={isJudgePending}
+          judgeResult={judgeResult}
+          wrestlers={wrestlers}
+          onRestart={handleRestart}
+        />
+      )}
     </>
   );
 }

@@ -1120,6 +1120,124 @@ body::before {
   text-transform: uppercase;
 }
 
+/* ---------- Verdict ---------- */
+.verdict-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.verdict-hero {
+  display: grid;
+  grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
+  gap: 28px;
+  align-items: stretch;
+  padding: 28px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--gold);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+}
+
+.verdict-hero__avatar {
+  min-width: 0;
+  aspect-ratio: 5 / 6;
+  background: linear-gradient(180deg, var(--bg-elev) 0%, var(--bg-elev-2) 100%);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.verdict-avatar {
+  width: 100%;
+  height: 100%;
+  color: rgba(245, 197, 66, 0.82);
+}
+
+.verdict-hero__copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 14px;
+}
+
+.verdict-kicker {
+  font-family: var(--display-font);
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--gold-bright);
+}
+
+.verdict-name {
+  font-family: var(--display-font);
+  font-size: clamp(42px, 6vw, 72px);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  line-height: 0.96;
+  color: var(--fg);
+}
+
+.verdict-reason {
+  max-width: 58ch;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--fg-muted);
+}
+
+.verdict-scores {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.verdict-score {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 22px 24px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--line-strong);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+}
+
+.verdict-score.is-winner {
+  border-top-color: var(--gold);
+  box-shadow:
+    inset 0 0 0 1px rgba(245, 197, 66, 0.16),
+    var(--shadow-card);
+}
+
+.verdict-score__label {
+  font-family: var(--display-font);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+
+.verdict-score__name {
+  font-family: var(--display-font);
+  font-size: clamp(24px, 3vw, 34px);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  line-height: 1.04;
+  color: var(--fg);
+}
+
+.verdict-score__value {
+  font-family: var(--display-font);
+  font-size: clamp(52px, 7vw, 82px);
+  font-weight: 400;
+  line-height: 0.9;
+  color: var(--gold-bright);
+}
+
 /* ---------- Wrestler avatar (silhouette / image) ---------- */
 .avatar {
   display: block;
@@ -1473,6 +1591,13 @@ body::before {
   .promo-stage {
     padding: 24px 18px 32px;
     gap: 36px;
+  }
+  .verdict-hero {
+    grid-template-columns: 1fr;
+    padding: 20px;
+  }
+  .verdict-scores {
+    grid-template-columns: 1fr;
   }
   .promo-stage__row,
   .promo-stage__row[data-side="2"] {

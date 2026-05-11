@@ -8,12 +8,13 @@ Helpers here pull the active payload from app.context instead of
 taking it as a parameter, so deep call chains stay clean.
 """
 
+import json
 from concurrent.futures import ThreadPoolExecutor
 
 from app.config import settings
 from app.context import get_current_promo
 from app.prompts.prompts import prompts
-from app.schemas.promo import Player, PromoResponse
+from app.schemas.promo import JudgeRequest, JudgeResponse, JudgeScore, Player, PromoResponse
 from app.services.openai_client import get_openai_client
 from app.services.tts import generate_turn_audio
 from app.services.wrestler import Wrestler
@@ -22,7 +23,7 @@ PORTRAIT_MODEL = "gpt-image-2"
 PORTRAIT_QUALITY = "low"
 PORTRAIT_SIZE = "1024x1536"
 PORTRAIT_MAX_ATTEMPTS = 2
-TOTAL_TURNS = 6
+TOTAL_TURNS = 4
 
 _PORTRAIT_VIBE = {
     "heel": "menacing, contemptuous expression, predatory body language, sneer",
@@ -186,3 +187,57 @@ def generate_mock_promo_response():
         for i, line in enumerate(mock_lines)
     ]
     return transcript, None, None
+
+
+
+def handle_judge_submission(payload: JudgeRequest) -> JudgeResponse:
+    player_1 = payload.players[0]
+    player_2 = payload.players[1]
+    transcript_text = "\n".join(
+        f"{turn.wrestler}: {turn.response}" for turn in payload.transcript
+    )
+    user_prompt = f"""
+Players:
+- Wrestler 1: {player_1.name} ({player_1.alignment}, {player_1.voice})
+- Wrestler 2: {player_2.name} ({player_2.alignment}, {player_2.voice})
+
+First on mic: Wrestler {payload.first_on_mic}
+
+Transcript:
+{transcript_text}
+
+Return JSON with exactly this shape:
+{{
+  "winner_name": "{player_1.name}",
+  "winner_index": 1,
+  "summary_line": "Short, punchy verdict line.",
+  "reason": "One concise explanation of why the winner took the exchange.",
+  "scores": [
+    {{"wrestler_name": "{player_1.name}", "score": 8.4}},
+    {{"wrestler_name": "{player_2.name}", "score": 7.8}}
+  ]
+}}
+"""
+    response = get_openai_client().chat.completions.create(
+        model=settings.openai_model,
+        response_format={"type": "json_object"},
+        messages=[
+            {"role": "system", "content": prompts["judge"]},
+            {"role": "user", "content": user_prompt},
+        ],
+    )
+    response_json = json.loads(response.choices[0].message.content)
+    scores = [
+        JudgeScore(
+            wrestler_name=score["wrestler_name"],
+            score=round(float(score["score"]), 1),
+        )
+        for score in response_json["scores"]
+    ]
+    return JudgeResponse(
+        winner_name=response_json["winner_name"],
+        winner_index=response_json["winner_index"],
+        summary_line=response_json["summary_line"],
+        reason=response_json["reason"],
+        scores=scores,
+    )
