@@ -1,18 +1,5 @@
-const ACCESS_KEY_STORAGE = "promo_gen_access_key";
-
-export function getAccessKey() {
-  return window.localStorage.getItem(ACCESS_KEY_STORAGE) ?? "";
-}
-
-export function setAccessKey(accessKey) {
-  window.localStorage.setItem(ACCESS_KEY_STORAGE, accessKey);
-}
-
-export function clearAccessKey() {
-  window.localStorage.removeItem(ACCESS_KEY_STORAGE);
-}
+const appAccessKey = import.meta.env.VITE_APP_ACCESS_KEY ?? "";
 
 export function accessHeaders() {
-  const accessKey = getAccessKey();
-  return accessKey ? { "X-App-Access-Key": accessKey } : {};
+  return appAccessKey ? { "X-App-Access-Key": appAccessKey } : {};
 }

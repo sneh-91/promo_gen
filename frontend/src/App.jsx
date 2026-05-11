@@ -1,9 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { submitJudge, submitPromo } from "./api/promo";
-import { clearAccessKey, getAccessKey, setAccessKey } from "./auth";
 import { EMPTY_WRESTLER } from "./constants";
-import { AccessGateScreen } from "./components/AccessGateScreen";
 import { LandingScreen } from "./components/LandingScreen";
 import { PromoPlayerScreen } from "./components/PromoPlayerScreen";
 import { PromoStartScreen } from "./components/PromoStartScreen";
@@ -15,7 +13,6 @@ import { WrestlerFormScreen } from "./components/WrestlerFormScreen";
 import { WRESTLER_PROFILES } from "./data/wrestlerProfiles";
 
 const createWrestler = () => ({ ...EMPTY_WRESTLER });
-const requiresAccessKey = import.meta.env.VITE_REQUIRE_ACCESS_KEY === "true";
 
 const initialWrestlers = () => ({
   1: createWrestler(),
@@ -39,10 +36,6 @@ function hasErrors(errors) {
 
 export function App() {
   const promoRunRef = useRef(0);
-  const [isUnlocked, setIsUnlocked] = useState(
-    !requiresAccessKey || Boolean(getAccessKey())
-  );
-  const [accessError, setAccessError] = useState("");
   const [screen, setScreen] = useState("landing");
   const [activeWrestler, setActiveWrestler] = useState(1);
   const [firstOnMic, setFirstOnMic] = useState(1);
@@ -161,12 +154,10 @@ export function App() {
         if (promoRunRef.current !== runId) return;
         console.error("Promo submission failed:", err);
         if (err.message.includes("401")) {
-          clearAccessKey();
-          setIsUnlocked(false);
-          setAccessError("Access key rejected. Try again.");
-          setScreen("landing");
           setIsSubmitting(false);
           setConfirmLabel("Cut the Promo");
+          setScreen("review");
+          window.alert("Backend access key rejected. Check frontend deployment env.");
           return;
         }
         setConfirmLabel("Try Again");
@@ -200,20 +191,9 @@ export function App() {
       <div className="bg-spotlight" aria-hidden="true" />
       <div className="bg-glow" aria-hidden="true" />
 
-      {!isUnlocked && (
-        <AccessGateScreen
-          errorMessage={accessError}
-          onUnlock={(accessKey) => {
-            setAccessKey(accessKey);
-            setAccessError("");
-            setIsUnlocked(true);
-          }}
-        />
-      )}
+      {screen === "landing" && <LandingScreen onStart={() => goToWrestler(1)} />}
 
-      {isUnlocked && screen === "landing" && <LandingScreen onStart={() => goToWrestler(1)} />}
-
-      {isUnlocked && screen === "wrestler" && (
+      {screen === "wrestler" && (
         <WrestlerFormScreen
           activeWrestler={activeWrestler}
           errors={errors}
@@ -225,7 +205,7 @@ export function App() {
         />
       )}
 
-      {isUnlocked && screen === "review" && (
+      {screen === "review" && (
         <ReviewScreen
           confirmLabel={confirmLabel}
           firstOnMic={firstOnMic}
@@ -238,14 +218,14 @@ export function App() {
         />
       )}
 
-      {isUnlocked && screen === "welcome" && (
+      {screen === "welcome" && (
         <WelcomeScreen
           isResponseReady={isResponseReady}
           onComplete={() => setScreen("taleOfTape")}
         />
       )}
 
-      {isUnlocked && screen === "taleOfTape" && (
+      {screen === "taleOfTape" && (
         <TaleOfTheTapeScreen
           wrestlers={wrestlers}
           firstOnMic={firstOnMic}
@@ -253,11 +233,11 @@ export function App() {
         />
       )}
 
-      {isUnlocked && screen === "promoStart" && (
+      {screen === "promoStart" && (
         <PromoStartScreen onComplete={() => setScreen("promo")} />
       )}
 
-      {isUnlocked && screen === "promo" && (
+      {screen === "promo" && (
         <PromoPlayerScreen
           transcript={transcript}
           wrestlers={wrestlers}
@@ -265,7 +245,7 @@ export function App() {
         />
       )}
 
-      {isUnlocked && screen === "verdict" && (
+      {screen === "verdict" && (
         <VerdictScreen
           isJudgePending={isJudgePending}
           judgeResult={judgeResult}

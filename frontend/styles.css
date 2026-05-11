@@ -231,25 +231,6 @@ body::before {
   border-color: var(--gold);
 }
 
-.access-gate {
-  width: 100%;
-  max-width: 460px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  align-items: stretch;
-}
-
-.access-gate__input {
-  text-align: center;
-}
-
-.access-gate__error {
-  font-size: 13px;
-  color: var(--error);
-  text-align: center;
-  letter-spacing: 0.04em;
-}
 
 /* ---------- Layout ---------- */
 .container {
