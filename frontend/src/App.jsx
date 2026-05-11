@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 
 import { submitJudge, submitPromo } from "./api/promo";
+import { clearAccessKey, getAccessKey, setAccessKey } from "./auth";
 import { EMPTY_WRESTLER } from "./constants";
+import { AccessGateScreen } from "./components/AccessGateScreen";
 import { LandingScreen } from "./components/LandingScreen";
 import { PromoPlayerScreen } from "./components/PromoPlayerScreen";
 import { PromoStartScreen } from "./components/PromoStartScreen";
@@ -13,6 +15,7 @@ import { WrestlerFormScreen } from "./components/WrestlerFormScreen";
 import { WRESTLER_PROFILES } from "./data/wrestlerProfiles";
 
 const createWrestler = () => ({ ...EMPTY_WRESTLER });
+const requiresAccessKey = import.meta.env.VITE_REQUIRE_ACCESS_KEY === "true";
 
 const initialWrestlers = () => ({
   1: createWrestler(),
@@ -36,6 +39,10 @@ function hasErrors(errors) {
 
 export function App() {
   const promoRunRef = useRef(0);
+  const [isUnlocked, setIsUnlocked] = useState(
+    !requiresAccessKey || Boolean(getAccessKey())
+  );
+  const [accessError, setAccessError] = useState("");
   const [screen, setScreen] = useState("landing");
   const [activeWrestler, setActiveWrestler] = useState(1);
   const [firstOnMic, setFirstOnMic] = useState(1);
@@ -153,10 +160,23 @@ export function App() {
       .catch((err) => {
         if (promoRunRef.current !== runId) return;
         console.error("Promo submission failed:", err);
+        if (err.message.includes("401")) {
+          clearAccessKey();
+          setIsUnlocked(false);
+          setAccessError("Access key rejected. Try again.");
+          setScreen("landing");
+          setIsSubmitting(false);
+          setConfirmLabel("Cut the Promo");
+          return;
+        }
         setConfirmLabel("Try Again");
         setIsSubmitting(false);
         setScreen("review");
-        window.alert("Could not reach the booking desk. Please try again.");
+        window.alert(
+          err.message.includes("429")
+            ? "Promo limit reached. Try again later."
+            : "Could not reach the booking desk. Please try again."
+        );
       });
   };
 
@@ -180,9 +200,20 @@ export function App() {
       <div className="bg-spotlight" aria-hidden="true" />
       <div className="bg-glow" aria-hidden="true" />
 
-      {screen === "landing" && <LandingScreen onStart={() => goToWrestler(1)} />}
+      {!isUnlocked && (
+        <AccessGateScreen
+          errorMessage={accessError}
+          onUnlock={(accessKey) => {
+            setAccessKey(accessKey);
+            setAccessError("");
+            setIsUnlocked(true);
+          }}
+        />
+      )}
 
-      {screen === "wrestler" && (
+      {isUnlocked && screen === "landing" && <LandingScreen onStart={() => goToWrestler(1)} />}
+
+      {isUnlocked && screen === "wrestler" && (
         <WrestlerFormScreen
           activeWrestler={activeWrestler}
           errors={errors}
@@ -194,7 +225,7 @@ export function App() {
         />
       )}
 
-      {screen === "review" && (
+      {isUnlocked && screen === "review" && (
         <ReviewScreen
           confirmLabel={confirmLabel}
           firstOnMic={firstOnMic}
@@ -207,14 +238,14 @@ export function App() {
         />
       )}
 
-      {screen === "welcome" && (
+      {isUnlocked && screen === "welcome" && (
         <WelcomeScreen
           isResponseReady={isResponseReady}
           onComplete={() => setScreen("taleOfTape")}
         />
       )}
 
-      {screen === "taleOfTape" && (
+      {isUnlocked && screen === "taleOfTape" && (
         <TaleOfTheTapeScreen
           wrestlers={wrestlers}
           firstOnMic={firstOnMic}
@@ -222,11 +253,11 @@ export function App() {
         />
       )}
 
-      {screen === "promoStart" && (
+      {isUnlocked && screen === "promoStart" && (
         <PromoStartScreen onComplete={() => setScreen("promo")} />
       )}
 
-      {screen === "promo" && (
+      {isUnlocked && screen === "promo" && (
         <PromoPlayerScreen
           transcript={transcript}
           wrestlers={wrestlers}
@@ -234,7 +265,7 @@ export function App() {
         />
       )}
 
-      {screen === "verdict" && (
+      {isUnlocked && screen === "verdict" && (
         <VerdictScreen
           isJudgePending={isJudgePending}
           judgeResult={judgeResult}

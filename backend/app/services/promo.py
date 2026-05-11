@@ -17,6 +17,7 @@ from app.prompts.prompts import prompts
 from app.schemas.promo import JudgeRequest, JudgeResponse, JudgeScore, Player, PromoResponse
 from app.services.openai_client import get_openai_client
 from app.services.tts import generate_turn_audio
+from app.services.usage import enforce_promo_quota, record_successful_promo_run
 from app.services.wrestler import Wrestler
 
 PORTRAIT_MODEL = "gpt-image-2"
@@ -34,13 +35,18 @@ _PORTRAIT_VIBE = {
 
 def handle_promo_submission() -> PromoResponse:
     payload = get_current_promo()
+    enforce_promo_quota()
 
-    print("Received promo payload:")
-    print(f"  First on mic: Player {payload.first_on_mic}")
-    for i, player in enumerate(payload.players, start=1):
-        print(f"  Player {i}: {player.model_dump()}")
+    print(
+        "Generating promo:",
+        {
+            "first_on_mic": payload.first_on_mic,
+            "players": [player.name for player in payload.players],
+        },
+    )
 
     transcript, portrait_1, portrait_2 = generate_promo_response()
+    record_successful_promo_run()
 
     return PromoResponse(
         transcript=transcript,

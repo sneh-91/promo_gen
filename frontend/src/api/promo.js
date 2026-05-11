@@ -1,9 +1,13 @@
 import { API_BASE } from "../constants";
+import { accessHeaders } from "../auth";
 
 export async function submitPromo(players, firstOnMic) {
   const res = await fetch(`${API_BASE}/api/promo`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...accessHeaders(),
+    },
     body: JSON.stringify({ players, firstOnMic }),
   });
 
@@ -31,7 +35,10 @@ export async function submitJudge(players, transcript, firstOnMic) {
 
   const res = await fetch(`${API_BASE}/api/judge`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...accessHeaders(),
+    },
     body: JSON.stringify({
       players: judgePlayers,
       transcript: judgeTranscript,
