@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { submitJudge, submitPromo } from "./api/promo";
 import { EMPTY_WRESTLER } from "./constants";
+import { DecisionIntroScreen } from "./components/DecisionIntroScreen";
 import { LandingScreen } from "./components/LandingScreen";
 import { PromoPlayerScreen } from "./components/PromoPlayerScreen";
 import { PromoStartScreen } from "./components/PromoStartScreen";
@@ -241,8 +242,12 @@ export function App() {
         <PromoPlayerScreen
           transcript={transcript}
           wrestlers={wrestlers}
-          onComplete={() => setScreen("verdict")}
+          onComplete={() => setScreen("decisionIntro")}
         />
+      )}
+
+      {screen === "decisionIntro" && (
+        <DecisionIntroScreen onComplete={() => setScreen("verdict")} />
       )}
 
       {screen === "verdict" && (
