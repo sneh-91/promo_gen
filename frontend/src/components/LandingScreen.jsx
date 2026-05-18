@@ -6,7 +6,7 @@ export function LandingScreen({ onStart }) {
       <div className="hero">
         <span className="eyebrow eyebrow--gold">AI Promo Booking Desk</span>
         <h1 className="title title--display">
-          WWE <span className="title-accent">Promo</span> Gen
+          Wrestling <span className="title-accent">Promo</span> Gen
         </h1>
         <p className="description">
           Build two larger-than-life superstars, lock in their attitude, and set

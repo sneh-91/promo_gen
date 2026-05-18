@@ -1,5 +1,5 @@
 /* =====================================================================
-   WWE Promo Gen — clean, high-contrast arena theme
+   Wrestling Promo Gen - clean, high-contrast arena theme
    - Dark stage background with one subtle spotlight
    - Bold display type (Anton) for posters/labels, Inter for body
    - Red championship accents + gold highlights
@@ -18,7 +18,7 @@
   --fg-muted: #b8b8c2;
   --fg-dim: #7a7a86;
 
-  --accent: #e10600;          /* WWE red */
+  --accent: #e10600;          /* arena red */
   --accent-deep: #8a0400;
   --accent-hover: #ff1a14;
   --accent-soft: rgba(225, 6, 0, 0.18);

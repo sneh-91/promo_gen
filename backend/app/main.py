@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.routers import health, promo
 
-app = FastAPI(title="WWE Promo Gen API")
+app = FastAPI(title="Wrestling Promo Gen API")
 
 app.add_middleware(
     CORSMiddleware,
